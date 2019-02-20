@@ -169,7 +169,7 @@ class Security
             // do the long opening tags.
             $str = preg_replace('/<\?(php)/i', "&lt;?\\1", $str);
         } else {
-            $str = str_replace(['<?', '?' . '>'], ['&lt;?', '?&gt;'], $str);
+            $str = str_replace(['<?', '?'.'>'], ['&lt;?', '?&gt;'], $str);
         }
 
         /*
@@ -195,12 +195,12 @@ class Security
             $temp = '';
 
             for ($i = 0, $wordlen = strlen($word); $i < $wordlen; $i++) {
-                $temp .= substr($word, $i, 1) . "\s*";
+                $temp .= substr($word, $i, 1)."\s*";
             }
 
             // We only want to do this when it is followed by a non-word character
             // That way valid stuff like "dealer to" does not become "dealerto"
-            $str = preg_replace_callback('#(' . substr($temp, 0, -3) . ')(\W)#is', [$this, '_compact_exploded_words'], $str);
+            $str = preg_replace_callback('#('.substr($temp, 0, -3).')(\W)#is', [$this, '_compact_exploded_words'], $str);
         }
 
         /*
@@ -240,7 +240,7 @@ class Security
            * Becomes: &lt;blink&gt;
            */
         $naughty = 'alert|applet|audio|basefont|base|behavior|bgsound|blink|body|embed|expression|form|frameset|frame|head|html|ilayer|iframe|input|isindex|layer|link|meta|object|plaintext|style|script|textarea|title|video|xml|xss';
-        $str     = preg_replace_callback('#<(/*\s*)(' . $naughty . ')([^><]*)([><]*)#is', [$this, '_sanitize_naughty_html'], $str);
+        $str     = preg_replace_callback('#<(/*\s*)('.$naughty.')([^><]*)([><]*)#is', [$this, '_sanitize_naughty_html'], $str);
 
         /*
            * Sanitize naughty scripting elements
@@ -315,7 +315,7 @@ class Security
 
         do {
             $str = preg_replace(
-                "#<(/?[^><]+?)([^A-Za-z\-])(" . implode('|', $evil_attributes) . ")(\s*=\s*)([\"][^>]*?[\"]|[\'][^>]*?[\']|[^>]*?)([\s><])([><]*)#i",
+                "#<(/?[^><]+?)([^A-Za-z\-])(".implode('|', $evil_attributes).")(\s*=\s*)([\"][^>]*?[\"]|[\'][^>]*?[\']|[^>]*?)([\s><])([><]*)#i",
                 "<$1$6",
                 $str, -1, $count
             );
@@ -389,17 +389,17 @@ class Security
             '?',
             "%20",
             "%22",
-            "%3c",        // <
-            "%253c",    // <
-            "%3e",        // >
-            "%0e",        // >
-            "%28",        // (
-            "%29",        // )
-            "%2528",    // (
-            "%26",        // &
-            "%24",        // $
-            "%3f",        // ?
-            "%3b",        // ;
+            "%3c", // <
+            "%253c", // <
+            "%3e", // >
+            "%0e", // >
+            "%28", // (
+            "%29", // )
+            "%2528", // (
+            "%26", // &
+            "%24", // $
+            "%3f", // ?
+            "%3b", // ;
             "%3d"        // =
         ];
 
@@ -426,7 +426,7 @@ class Security
      */
     protected function _compact_exploded_words($matches)
     {
-        return preg_replace('/\s+/s', '', $matches[1]) . $matches[2];
+        return preg_replace('/\s+/s', '', $matches[1]).$matches[2];
     }
 
     // --------------------------------------------------------------------
@@ -442,7 +442,7 @@ class Security
     protected function _sanitize_naughty_html($matches)
     {
         // encode opening brace
-        $str = '&lt;' . $matches[1] . $matches[2] . $matches[3];
+        $str = '&lt;'.$matches[1].$matches[2].$matches[3];
 
         // encode captured opening or closing brace to prevent recursive vectors
         $str .= str_replace(['>', '<'], ['&gt;', '&lt;'],
@@ -574,7 +574,7 @@ class Security
 
         // 901119URL5918AMP18930PROTECT8198
 
-        $str = preg_replace('|\&([a-z\_0-9\-]+)\=([a-z\_0-9\-]+)|i', $this->xss_hash() . "\\1=\\2", $str);
+        $str = preg_replace('|\&([a-z\_0-9\-]+)\=([a-z\_0-9\-]+)|i', $this->xss_hash()."\\1=\\2", $str);
 
         /*
          * Validate standard character entities
@@ -612,7 +612,7 @@ class Security
         $str = str_replace(array_keys($this->_never_allowed_str), $this->_never_allowed_str, $str);
 
         foreach ($this->_never_allowed_regex as $regex) {
-            $str = preg_replace('#' . $regex . '#is', '[removed]', $str);
+            $str = preg_replace('#'.$regex.'#is', '[removed]', $str);
         }
 
         return $str;
@@ -627,11 +627,11 @@ class Security
         // carriage return (dec 13), and horizontal tab (dec 09)
 
         if ($url_encoded) {
-            $non_displayables[] = '/%0[0-8bcef]/';    // url encoded 00-08, 11, 12, 14, 15
-            $non_displayables[] = '/%1[0-9a-f]/';    // url encoded 16-31
+            $non_displayables[] = '/%0[0-8bcef]/'; // url encoded 00-08, 11, 12, 14, 15
+            $non_displayables[] = '/%1[0-9a-f]/'; // url encoded 16-31
         }
 
-        $non_displayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S';    // 00-08, 11, 12, 14-31, 127
+        $non_displayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S'; // 00-08, 11, 12, 14-31, 127
 
         do {
             $str = preg_replace($non_displayables, '', $str, -1, $count);
