@@ -78,7 +78,7 @@ class Security
      * harvested from examining vulnerabilities in other programs:
      * http://ha.ckers.org/xss.html
      *
-     * @param    mixed    string or array
+     * @param    mixed    string or array or boolean
      * @return    string
      */
     public function xss_clean($str, $is_image = false, $evilAttribute = true)
@@ -145,11 +145,6 @@ class Security
         if (strpos($str, "\t") !== false) {
             $str = str_replace("\t", ' ', $str);
         }
-
-        /*
-           * Capture converted string for later comparison
-           */
-        $converted_string = $str;
 
         // Remove Strings that are never allowed
         $str = $this->_do_never_allowed($str);
@@ -264,20 +259,6 @@ class Security
         // This adds a bit of extra precaution in case
         // something got through the above filters
         $str = $this->_do_never_allowed($str);
-
-        /*
-           * Images are Handled in a Special Way
-           * - Essentially, we want to know that after all of the character
-           * conversion is done whether any unwanted, likely XSS, code was found.
-           * If not, we return TRUE, as the image is clean.
-           * However, if the string post-conversion does not matched the
-           * string post-removal of XSS, then it fails, as there was unwanted XSS
-           * code found and removed/changed during processing.
-           */
-
-        if ($is_image === true) {
-            return ($str == $converted_string) ? true : false;
-        }
 
         return $str;
     }
