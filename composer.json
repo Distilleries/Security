@@ -37,6 +37,13 @@
             "Distilleries\\Security\\": "src/Distilleries/Security"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Distilleries\\Security\\SecurityServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
