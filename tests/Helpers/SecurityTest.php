@@ -30,6 +30,26 @@ class SecurityTest extends SecurityTestCase
         }
     }
 
+    public function testRemovedXssCleanFromArray()
+    {
+        $xss = new \Distilleries\Security\Helpers\Security();
+        $this->assertEquals([
+            '[removed]',
+            '[removed]'
+        ], $xss->xss_clean([
+            'document.cookie',
+            'document.write'
+        ]));
+
+    }
+
+    public function testReplaceTabToSpace()
+    {
+        $xss = new \Distilleries\Security\Helpers\Security();
+        $this->assertEquals('T est', $xss->xss_clean("T\test"));
+
+    }
+
     public function testSanitizeNaughtyScriptingElements()
     {
         $params = [
@@ -125,122 +145,126 @@ class SecurityTest extends SecurityTestCase
     public function testEscapeAttribute()
     {
         $params = [
-            '%'=>'\\\\%',
-            '_'=>'\\\\_',
-            '\''=>'\'\'',
-            '"'=>'\\\\"',
-            '<'=>'\\\\<',
-            '>'=>'\\\\>',
-            '('=>'\\\\(',
-            ')'=>'\\\\)',
-            '{'=>'\\\\{',
-            ']'=>'\\\\}',
-            ':'=>'\\\\:',
-            '/'=>'\\\\/',
-            '\\'=>'\\\\'
+            '%' => '\\\\%',
+            '_' => '\\\\_',
+            '\'' => '\'\'',
+            '"' => '\\\\"',
+            '<' => '\\\\<',
+            '>' => '\\\\>',
+            '(' => '\\\\(',
+            ')' => '\\\\)',
+            '{' => '\\\\{',
+            ']' => '\\\\}',
+            ':' => '\\\\:',
+            '/' => '\\\\/',
+            '\\' => '\\\\'
         ];
 
         $faker = Faker\Factory::create();
-        foreach ($params as $value=>$replace) {
+        foreach ($params as $value => $replace) {
             $sentance = $faker->sentence(6);
-            $this->assertEquals($sentance . $replace, Distilleries\Security\Helpers\Security::escapeLike($sentance . $value));
+            $this->assertEquals($sentance . $replace,
+                Distilleries\Security\Helpers\Security::escapeLike($sentance . $value));
         }
     }
 
-    public function testSanitizeFilename(){
+    public function testSanitizeFilename()
+    {
         $faker = Faker\Factory::create();
-        $file = $faker->slug .'.'. $faker->fileExtension();
+        $file = $faker->slug . '.' . $faker->fileExtension();
 
         $params = [
-            "../".$file=>$file,
-            "<!--".$file=>$file,
-            "-->".$file=>$file,
-            "<".$file=>$file,
-            ">".$file=>$file,
-            "'".$file=>$file,
-            '"'.$file=>$file,
-            '&'.$file=>$file,
-            '$'.$file=>$file,
-            '#'.$file=>$file,
-            '{'.$file=>$file,
-            '}'.$file=>$file,
-            '['.$file=>$file,
-            ']'.$file=>$file,
-            '='.$file=>$file,
-            ';'.$file=>$file,
-            '?'.$file=>$file,
-            "%20".$file=>$file,
-            "%22".$file=>$file,
-            "%3c".$file=>$file,
-            "%253c".$file=>$file,
-            "%3e".$file=>$file,
-            "%0e".$file=>$file,
-            "%28".$file=>$file,
-            "%29".$file=>$file,
-            "%2528".$file=>$file,
-            "%26".$file=>$file,
-            "%24".$file=>$file,
-            "%3f".$file=>$file,
-            "%3b".$file=>$file,
-            "%3d".$file=>$file,
-            "./".$file=>$file,
-            "/".$file=>$file,
+            "../" . $file => $file,
+            "<!--" . $file => $file,
+            "-->" . $file => $file,
+            "<" . $file => $file,
+            ">" . $file => $file,
+            "'" . $file => $file,
+            '"' . $file => $file,
+            '&' . $file => $file,
+            '$' . $file => $file,
+            '#' . $file => $file,
+            '{' . $file => $file,
+            '}' . $file => $file,
+            '[' . $file => $file,
+            ']' . $file => $file,
+            '=' . $file => $file,
+            ';' . $file => $file,
+            '?' . $file => $file,
+            "%20" . $file => $file,
+            "%22" . $file => $file,
+            "%3c" . $file => $file,
+            "%253c" . $file => $file,
+            "%3e" . $file => $file,
+            "%0e" . $file => $file,
+            "%28" . $file => $file,
+            "%29" . $file => $file,
+            "%2528" . $file => $file,
+            "%26" . $file => $file,
+            "%24" . $file => $file,
+            "%3f" . $file => $file,
+            "%3b" . $file => $file,
+            "%3d" . $file => $file,
+            "./" . $file => $file,
+            "/" . $file => $file,
         ];
 
         $xss = new \Distilleries\Security\Helpers\Security();
         foreach ($params as $value => $replace) {
-            $this->assertEquals( $replace, $xss->sanitize_filename($value));
+            $this->assertEquals($replace, $xss->sanitize_filename($value));
         }
     }
 
-    public function testSanitizeFilenameNotRelative(){
+    public function testSanitizeFilenameNotRelative()
+    {
         $faker = Faker\Factory::create();
-        $file = $faker->slug .'.'. $faker->fileExtension();
+        $file = $faker->slug . '.' . $faker->fileExtension();
 
         $params = [
-            "../".$file=>$file,
-            "<!--".$file=>$file,
-            "-->".$file=>$file,
-            "<".$file=>$file,
-            ">".$file=>$file,
-            "'".$file=>$file,
-            '"'.$file=>$file,
-            '&'.$file=>$file,
-            '$'.$file=>$file,
-            '#'.$file=>$file,
-            '{'.$file=>$file,
-            '}'.$file=>$file,
-            '['.$file=>$file,
-            ']'.$file=>$file,
-            '='.$file=>$file,
-            ';'.$file=>$file,
-            '?'.$file=>$file,
-            "%20".$file=>$file,
-            "%22".$file=>$file,
-            "%3c".$file=>$file,
-            "%253c".$file=>$file,
-            "%3e".$file=>$file,
-            "%0e".$file=>$file,
-            "%28".$file=>$file,
-            "%29".$file=>$file,
-            "%2528".$file=>$file,
-            "%26".$file=>$file,
-            "%24".$file=>$file,
-            "%3f".$file=>$file,
-            "%3b".$file=>$file,
-            "%3d".$file=>$file,
-            "./".$file=>"./".$file,
-            "/".$file=>"/".$file,
+            "../" . $file => $file,
+            "<!--" . $file => $file,
+            "-->" . $file => $file,
+            "<" . $file => $file,
+            ">" . $file => $file,
+            "'" . $file => $file,
+            '"' . $file => $file,
+            '&' . $file => $file,
+            '$' . $file => $file,
+            '#' . $file => $file,
+            '{' . $file => $file,
+            '}' . $file => $file,
+            '[' . $file => $file,
+            ']' . $file => $file,
+            '=' . $file => $file,
+            ';' . $file => $file,
+            '?' . $file => $file,
+            "%20" . $file => $file,
+            "%22" . $file => $file,
+            "%3c" . $file => $file,
+            "%253c" . $file => $file,
+            "%3e" . $file => $file,
+            "%0e" . $file => $file,
+            "%28" . $file => $file,
+            "%29" . $file => $file,
+            "%2528" . $file => $file,
+            "%26" . $file => $file,
+            "%24" . $file => $file,
+            "%3f" . $file => $file,
+            "%3b" . $file => $file,
+            "%3d" . $file => $file,
+            "./" . $file => "./" . $file,
+            "/" . $file => "/" . $file,
         ];
 
         $xss = new \Distilleries\Security\Helpers\Security();
         foreach ($params as $value => $replace) {
-            $this->assertEquals( $replace, $xss->sanitize_filename($value,true));
+            $this->assertEquals($replace, $xss->sanitize_filename($value, true));
         }
     }
 
 
-    public function testEntitiesDecode(){
+    public function testEntitiesDecode()
+    {
 
         $params = [
             '&lt;a href=&quot;javascript:alert(\'test\')&quot;&gt;Test&lt;/a&gt;' => '<a href="javascript:alert(\'test\')">Test</a>',
