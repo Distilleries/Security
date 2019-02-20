@@ -29,15 +29,15 @@ class Security
      */
     protected $_never_allowed_str = [
         'document.cookie' => '[removed]',
-        'document.write'  => '[removed]',
-        '.parentNode'     => '[removed]',
-        '.innerHTML'      => '[removed]',
+        'document.write' => '[removed]',
+        '.parentNode' => '[removed]',
+        '.innerHTML' => '[removed]',
         'window.location' => '[removed]',
-        '-moz-binding'    => '[removed]',
-        '<!--'            => '&lt;!--',
-        '-->'             => '--&gt;',
-        '<![CDATA['       => '&lt;![CDATA[',
-        '<comment>'       => '&lt;comment&gt;'
+        '-moz-binding' => '[removed]',
+        '<!--' => '&lt;!--',
+        '-->' => '--&gt;',
+        '<![CDATA[' => '&lt;![CDATA[',
+        '<comment>' => '&lt;comment&gt;'
     ];
 
     /* never allowed, regex replacement */
@@ -88,7 +88,7 @@ class Security
            *
            */
         if (is_array($str)) {
-            while (list($key) = each($str)) {
+            foreach ($str as $key => $value) {
                 $str[$key] = $this->xss_clean($str[$key], $is_image, $evilAttribute);
             }
 
@@ -169,7 +169,7 @@ class Security
             // do the long opening tags.
             $str = preg_replace('/<\?(php)/i', "&lt;?\\1", $str);
         } else {
-            $str = str_replace(['<?', '?'.'>'], ['&lt;?', '?&gt;'], $str);
+            $str = str_replace(['<?', '?' . '>'], ['&lt;?', '?&gt;'], $str);
         }
 
         /*
@@ -195,12 +195,13 @@ class Security
             $temp = '';
 
             for ($i = 0, $wordlen = strlen($word); $i < $wordlen; $i++) {
-                $temp .= substr($word, $i, 1)."\s*";
+                $temp .= substr($word, $i, 1) . "\s*";
             }
 
             // We only want to do this when it is followed by a non-word character
             // That way valid stuff like "dealer to" does not become "dealerto"
-            $str = preg_replace_callback('#('.substr($temp, 0, -3).')(\W)#is', [$this, '_compact_exploded_words'], $str);
+            $str = preg_replace_callback('#(' . substr($temp, 0, -3) . ')(\W)#is', [$this, '_compact_exploded_words'],
+                $str);
         }
 
         /*
@@ -240,7 +241,8 @@ class Security
            * Becomes: &lt;blink&gt;
            */
         $naughty = 'alert|applet|audio|basefont|base|behavior|bgsound|blink|body|embed|expression|form|frameset|frame|head|html|ilayer|iframe|input|isindex|layer|link|meta|object|plaintext|style|script|textarea|title|video|xml|xss';
-        $str     = preg_replace_callback('#<(/*\s*)('.$naughty.')([^><]*)([><]*)#is', [$this, '_sanitize_naughty_html'], $str);
+        $str = preg_replace_callback('#<(/*\s*)(' . $naughty . ')([^><]*)([><]*)#is', [$this, '_sanitize_naughty_html'],
+            $str);
 
         /*
            * Sanitize naughty scripting elements
@@ -254,7 +256,8 @@ class Security
            * For example:	eval('some code')
            * Becomes:		eval&#40;'some code'&#41;
            */
-        $str = preg_replace('#(alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#40;\\3&#41;", $str);
+        $str = preg_replace('#(alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si',
+            "\\1\\2&#40;\\3&#41;", $str);
 
 
         // Final clean up
@@ -315,7 +318,8 @@ class Security
 
         do {
             $str = preg_replace(
-                "#<(/?[^><]+?)([^A-Za-z\-])(".implode('|', $evil_attributes).")(\s*=\s*)([\"][^>]*?[\"]|[\'][^>]*?[\']|[^>]*?)([\s><])([><]*)#i",
+                "#<(/?[^><]+?)([^A-Za-z\-])(" . implode('|',
+                    $evil_attributes) . ")(\s*=\s*)([\"][^>]*?[\"]|[\'][^>]*?[\']|[^>]*?)([\s><])([><]*)#i",
                 "<$1$6",
                 $str, -1, $count
             );
@@ -350,10 +354,10 @@ class Security
         }
 
         $str = html_entity_decode($str, ENT_COMPAT, $charset);
-        $str = preg_replace_callback('~&#x(0*[0-9a-f]{2,5})~i', function($matches) {
+        $str = preg_replace_callback('~&#x(0*[0-9a-f]{2,5})~i', function ($matches) {
             return chr(hexdec($matches[1]));
         }, $str);
-        return preg_replace_callback('~&#([0-9]{2,4})~', function($matches) {
+        return preg_replace_callback('~&#([0-9]{2,4})~', function ($matches) {
             return chr($matches[1]);
         }, $str);
     }
@@ -426,7 +430,7 @@ class Security
      */
     protected function _compact_exploded_words($matches)
     {
-        return preg_replace('/\s+/s', '', $matches[1]).$matches[2];
+        return preg_replace('/\s+/s', '', $matches[1]) . $matches[2];
     }
 
     // --------------------------------------------------------------------
@@ -442,7 +446,7 @@ class Security
     protected function _sanitize_naughty_html($matches)
     {
         // encode opening brace
-        $str = '&lt;'.$matches[1].$matches[2].$matches[3];
+        $str = '&lt;' . $matches[1] . $matches[2] . $matches[3];
 
         // encode captured opening or closing brace to prevent recursive vectors
         $str .= str_replace(['>', '<'], ['&gt;', '&lt;'],
@@ -574,7 +578,7 @@ class Security
 
         // 901119URL5918AMP18930PROTECT8198
 
-        $str = preg_replace('|\&([a-z\_0-9\-]+)\=([a-z\_0-9\-]+)|i', $this->xss_hash()."\\1=\\2", $str);
+        $str = preg_replace('|\&([a-z\_0-9\-]+)\=([a-z\_0-9\-]+)|i', $this->xss_hash() . "\\1=\\2", $str);
 
         /*
          * Validate standard character entities
@@ -612,7 +616,7 @@ class Security
         $str = str_replace(array_keys($this->_never_allowed_str), $this->_never_allowed_str, $str);
 
         foreach ($this->_never_allowed_regex as $regex) {
-            $str = preg_replace('#'.$regex.'#is', '[removed]', $str);
+            $str = preg_replace('#' . $regex . '#is', '[removed]', $str);
         }
 
         return $str;
