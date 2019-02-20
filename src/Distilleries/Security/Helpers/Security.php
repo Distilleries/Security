@@ -426,8 +426,8 @@ class Security
      * Callback function for xss_clean() to remove whitespace from
      * things like j a v a s c r i p t
      *
-     * @param    type
-     * @return    type
+     * @param    array $matches
+     * @return    string | string[]
      */
     protected function _compact_exploded_words($matches)
     {
