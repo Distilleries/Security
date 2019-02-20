@@ -24,7 +24,7 @@ class XSS
             $config->set('Cache.DefinitionImpl', null);
             //$config->set('HTML.SafeIframe', true);
 
-            array_walk_recursive($input, function (&$input) use ($config) {
+            array_walk_recursive($input, function(&$input) use ($config) {
                 if (config('security.html_purifier')) {
                     $input = (new \HTMLPurifier($config))->purify($input);
                 }
