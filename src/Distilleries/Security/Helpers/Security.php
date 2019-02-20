@@ -79,7 +79,7 @@ class Security
      * http://ha.ckers.org/xss.html
      *
      * @param    mixed    string or array or boolean
-     * @return    string
+     * @return    string | array
      */
     public function xss_clean($str, $is_image = false, $evilAttribute = true)
     {
