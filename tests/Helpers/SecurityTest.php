@@ -238,5 +238,20 @@ class SecurityTest extends SecurityTestCase
             $this->assertEquals( $replace, $xss->sanitize_filename($value,true));
         }
     }
+
+
+    public function testEntitiesDecode(){
+
+        $params = [
+            '&lt;a href=&quot;javascript:alert(\'test\')&quot;&gt;Test&lt;/a&gt;' => '<a href="javascript:alert(\'test\')">Test</a>',
+        ];
+
+        $faker = Faker\Factory::create();
+        $xss = new \Distilleries\Security\Helpers\Security();
+        foreach ($params as $value => $replace) {
+            $sentance = $faker->sentence(6);
+            $this->assertEquals($sentance . $replace, $xss->entity_decode($sentance . $value));
+        }
+    }
 }
 
