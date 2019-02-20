@@ -14,11 +14,11 @@ class SecurityServiceProvider extends \Illuminate\Support\ServiceProvider
     {
 
         $this->publishes([
-            __DIR__ . '/../../config/config.php'    => config_path('security.php'),
+            __DIR__.'/../../config/config.php'    => config_path('security.php'),
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/config.php', 'security'
+            __DIR__.'/../../config/config.php', 'security'
         );
 
 
