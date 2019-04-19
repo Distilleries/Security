@@ -10,7 +10,7 @@ abstract class SecurityTestCase extends \Orchestra\Testbench\BrowserKit\TestCase
         return ['Distilleries\Security\SecurityServiceProvider'];
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->app['Illuminate\Contracts\Console\Kernel']->call('vendor:publish', ['--all' => true]);
