@@ -1,4 +1,4 @@
-versions = 7.1 7.2
+versions = 7.1 7.2 7.3
 pwda = $(pwd)
 test:
 	@echo "Start testing"
