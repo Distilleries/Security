@@ -24,7 +24,7 @@ Add on your composer.json
 
 ``` json
     "require": {
-        "distilleries/Security": "1.*",
+        "distilleries/security": "1.*",
     }
 ```
 
