@@ -26,7 +26,7 @@ install:
 
 script:
   - >
-    vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover=coverage.clover
+    XDEBUG_MODE=coverage vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover=coverage.clover
 
 matrix:
   fast_finish: true
